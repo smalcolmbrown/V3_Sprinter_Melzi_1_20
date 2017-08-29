@@ -30,6 +30,14 @@
 #define THERMISTORHEATER 1
 #define THERMISTORBED 1
 
+//-----------------------------------------------------------------------
+//// SETTINGS FOR Stepper driver type
+//-----------------------------------------------------------------------
+// Un-Comment out if you are using DRV8825 Stepper drivers for X and Y axis 
+// the default is commented out for an un-modified V3 printer only use this
+// setting if you have Bill Green's Stepper Mod fitted.
+#define STEPPER_DRIVER_X_Y_DRV8825      
+
 //// Calibration variables
 // X, Y, Z, E steps per unit - Metric Prusa Mendel with Wade extruder:
 //#define _AXIS_STEP_PER_UNIT {80, 80, 3200/1.25,700}
@@ -38,7 +46,11 @@
 // MakerGear Hybrid Prusa Mendel:
 // Z axis value is for .9 stepper(if you have 1.8 steppers for Z, you need to use 2272.7272)
 //#define _AXIS_STEP_PER_UNIT {104.987, 104.987, 4545.4544, 1487}
-#define _AXIS_STEP_PER_UNIT {78.82, 78.82, 2560, 99.6150} //V3-Z-screw2
+#ifndef STEPPER_DRIVER_X_Y_DRV8825
+  #define _AXIS_STEP_PER_UNIT {78.82, 78.82, 2560, 99.6150}     //V3-Z-screw2 fitted with A4988 stepper drivers for X, Y, Z and E (the default for the V3 )
+#else
+  #define _AXIS_STEP_PER_UNIT {157.64, 157.64, 2560, 99.6150}   //V3-Z-screw2 with X and Y fitted with DRV8825 stepper drivers and A4988 stepper drivers for Z and E
+#endif
 
 
 //// Endstop Settings
@@ -52,6 +64,9 @@
 const bool X_ENDSTOP_INVERT = true;
 const bool Y_ENDSTOP_INVERT = true;
 const bool Z_ENDSTOP_INVERT = true;
+
+// uncomment this if a Eaglemoss V3 printer is the target printer
+#define V3
 
 // This determines the communication speed of the printer
 #define BAUDRATE 115200
@@ -147,8 +162,6 @@ const int X_MAX_LENGTH = 140;
 const int Y_MAX_LENGTH = 140;
 const int Z_MAX_LENGTH = 130;
 
-
-#define Z_INCREMENT 0.05
 
 //-----------------------------------------------------------------------
 //// MOVEMENT SETTINGS
@@ -349,14 +362,20 @@ const int dropsegments=5; //everything with less than this number of steps will 
 //#define TEMP_RESIDENCY_TIME 20  // (seconds)
 //#define TEMP_HYSTERESIS 5       // (C°) range of +/- temperatures considered "close" to the target one
 
+//-----------------------------------------------------------------------
 //// The minimal temperature defines the temperature below which the heater will not be enabled
+//-----------------------------------------------------------------------
 #define MINTEMP 5
 
+//-----------------------------------------------------------------------
 //// Experimental max temp
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
-#define MAXTEMP 275
+//-----------------------------------------------------------------------
+#define MAXTEMP 270
+#define MAXTEMPBED 130
+
 
 // Select one of these only to define how the nozzle temp is read.
 #define HEATER_USES_THERMISTOR
@@ -378,6 +397,58 @@ const int dropsegments=5; //everything with less than this number of steps will 
 #define EXTRUDERFAN_DEC 50 //Hotend temperature from where the fan will be turned on
 
 //#define CHAIN_OF_COMMAND 1 //Finish buffered moves before executing M42, fan speed, heater target, and so...
+
+
+//-----------------------------------------------------------------------
+//// SETTINGS FOR Z PROBE FUNCTION (Command G29 and G30)
+//-----------------------------------------------------------------------
+
+// Comment out (using // at the start of the line) to disable Bed Probe support:
+#define HAS_BED_PROBE 1
+
+#ifdef HAS_BED_PROBE
+  #define Z_INCREMENT 0.05                  // increments for probing Z Height
+  #define Z_NEGETIVE_TRIGGER 1              // Z probe: 1 if a Negetive Pulse, 0 if a Positive Pulse on trigger
+  #define X_PROBE_OFFSET_FROM_EXTRUDER -45  // X offset: -left  +right  [of the nozzle] (Must Be an Integer)
+  #define Y_PROBE_OFFSET_FROM_EXTRUDER -10  // Y offset: -front +behind [the nozzle] (Must Be an Integer)
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER 0    // Z offset: -below +above  [the nozzle] (Can be a Float)
+
+  #define Z_CLEARANCE_BETWEEN_PROBES   5    // Z Clearance between probe points
+
+#endif
+
+//-----------------------------------------------------------------------
+//// Setting for the software control of fans
+// a V3 has two fans extruder and work fan. Only the work fan is software controlable
+//-----------------------------------------------------------------------
+#define FAN_COUNT 2
+
+//-----------------------------------------------------------------------
+//// SETTINGS FOR EXPERIMENTAL_I2CBUS pinched from Marlin 1.1.0
+//
+// M260 - Send data to a I2C slave device 
+// M261 - Request X bytes from I2C slave device 
+//-----------------------------------------------------------------------
+// comment out if no EXPERIMENTAL_I2CBUS
+#define EXPERIMENTAL_I2CBUS
+
+//-----------------------------------------------------------------------
+//// SETTINGS FOR M355  - Case light on or off (Command M355)
+//-----------------------------------------------------------------------
+// comment out if no M355 support 
+#define M355_SUPPORT
+
+#ifdef M355_SUPPORT
+  #define CASE_LIGHT 30          // A1 on J16
+#endif
+
+//-----------------------------------------------------------------------
+//// SETTINGS FOR M499  - Force Error mode(Command M499)
+//-----------------------------------------------------------------------
+// comment out if no M499 support (only used to test BBB() error reporting)
+//#define M499_SUPPORT
+
+
 
 //-----------------------------------------------------------------------
 // DEBUGING

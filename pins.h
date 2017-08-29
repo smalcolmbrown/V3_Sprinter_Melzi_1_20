@@ -692,9 +692,13 @@
 #define E_STEP_PIN         1
 #define E_DIR_PIN          0
 
-#define LED_PIN            -1
+//#define PROBE_PIN          -1    // No Z height probe
+//#define PROBE_PIN          29    //29 on Melzi1284p A2
+#define PROBE_PIN          11     // TX1 on V3
 
-#define FAN_PIN            -1 
+#define LED_PIN            27    // A4 on V3
+
+#define FAN_PIN            4
 
 #define PS_ON_PIN          -1
 #define KILL_PIN           -1
